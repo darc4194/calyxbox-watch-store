@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  
+  /* Brand Palette */
+  --color-tea-green: #c5efcb;
+  --color-tea-green-100: #13441a;
+  --color-tea-green-200: #258834;
+  --color-tea-green-300: #3bc950;
+  --color-tea-green-400: #7fdc8d;
+  --color-tea-green-500: #c5efcb;
+  --color-tea-green-600: #cff2d4;
+  --color-tea-green-700: #dbf5df;
+  --color-tea-green-800: #e7f8ea;
+  --color-tea-green-900: #f3fcf4;
+
+  --color-dusty-olive: #647a67;
+  --color-dusty-olive-100: #141915;
+  --color-dusty-olive-200: #28312a;
+  --color-dusty-olive-300: #3d4a3e;
+  --color-dusty-olive-400: #516353;
+  --color-dusty-olive-500: #647a67;
+  --color-dusty-olive-600: #819884;
+  --color-dusty-olive-700: #a1b2a3;
+  --color-dusty-olive-800: #c0ccc2;
+  --color-dusty-olive-900: #e0e5e0;
+
+  --color-carbon-black: #1f241f;
+  --color-carbon-black-100: #060706;
+  --color-carbon-black-200: #0c0e0c;
+  --color-carbon-black-300: #121512;
+  --color-carbon-black-400: #191c19;
+  --color-carbon-black-500: #1f241f;
+  --color-carbon-black-600: #485348;
+  --color-carbon-black-700: #718271;
+  --color-carbon-black-800: #a0aca0;
+  --color-carbon-black-900: #d0d6d0;
+
+  --color-charcoal-brown: #3c433b;
+  --color-charcoal-brown-100: #0c0e0c;
+  --color-charcoal-brown-200: #181b18;
+  --color-charcoal-brown-300: #242924;
+  --color-charcoal-brown-400: #313630;
+  --color-charcoal-brown-500: #3c433b;
+  --color-charcoal-brown-600: #616c60;
+  --color-charcoal-brown-700: #879385;
+  --color-charcoal-brown-800: #afb7ae;
+  --color-charcoal-brown-900: #d7dbd6;
+
+  --color-muted-teal: #8fa38a;
+  --color-celadon: #a9c5a0;
+
+  /* Functional Mappings */
+  --color-brand: var(--color-tea-green-200);
+  --color-brand-text: var(--color-tea-green-100);
+  --color-charcoal: var(--color-carbon-black);
+  --color-light-grey: var(--color-tea-green-900);
+  --color-ultra-light: #f9fbf9;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-charcoal bg-white text-[15px];
+  }
+}
+
+.glass {
+  @apply backdrop-blur-md bg-white/70 border border-white/20;
+}
+
+.markdown-body {
+  @apply text-sm leading-relaxed;
+}
