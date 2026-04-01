@@ -1,7 +1,11 @@
 import { Phone, X } from 'lucide-react';
 import { motion } from 'motion/react';
 
-export default function Footer() {
+interface FooterProps {
+  onAdminClick?: () => void;
+}
+
+export default function Footer({ onAdminClick }: FooterProps) {
   return (
     <footer className="bg-carbon-black text-white pt-16 pb-8 relative overflow-hidden">
       {/* Black Friday Specials Floating Badge */}
@@ -68,8 +72,14 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="pt-8 border-t border-white/10 text-center text-[10px] text-dusty-olive/60">
-          Copyright 2025 © CaptainDerrick.dev All Right Reserved.
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 text-[10px] text-dusty-olive/60">
+          <div>Copyright 2026 © Autumn Agency. All Rights Reserved.</div>
+          <button 
+            onClick={onAdminClick}
+            className="hover:text-brand transition-colors uppercase tracking-widest font-bold"
+          >
+            Admin Access
+          </button>
         </div>
       </div>
     </footer>

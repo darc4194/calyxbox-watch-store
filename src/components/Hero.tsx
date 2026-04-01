@@ -3,50 +3,66 @@ import { motion } from 'motion/react';
 
 export default function Hero() {
   return (
-    <section className="relative w-full min-h-[500px] md:h-[600px] flex flex-col md:flex-row overflow-hidden">
-      {/* Left Side - Image */}
-      <div className="w-full md:w-1/2 bg-light-grey flex items-center justify-center p-8 md:p-12 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-celadon/20 to-transparent"></div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="relative w-full max-w-[280px] md:max-w-md aspect-square z-10"
-        >
-          <img
-            src="https://images.unsplash.com/photo-1544117518-30dd5ff7a4b0?auto=format&fit=crop&q=80&w=1000"
-            alt="Flagship Smartwatch"
-            className="w-full h-full object-contain drop-shadow-2xl"
-            referrerPolicy="no-referrer"
-          />
-        </motion.div>
+    <section className="relative w-full h-[500px] md:h-[700px] overflow-hidden">
+      {/* Background Image Container */}
+      <div className="absolute inset-0 w-full h-full">
+        <motion.img
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 1.5 }}
+          src="https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&q=80&w=1920"
+          alt="Premium Tech & Style"
+          className="w-full h-full object-cover object-center"
+          referrerPolicy="no-referrer"
+        />
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 bg-black/40 md:bg-gradient-to-r md:from-white/95 md:via-white/80 md:to-transparent"></div>
       </div>
 
-      {/* Right Side - Content */}
-      <div className="w-full md:w-1/2 bg-white flex items-center px-6 py-12 md:px-16">
+      {/* Content Container */}
+      <div className="relative h-full max-w-7xl mx-auto px-6 md:px-12 flex items-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-          className="max-w-lg"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="max-w-xl text-center md:text-left"
         >
-          <p className="text-brand font-bold text-sm uppercase tracking-wider mb-2">Exclusive Deal 40% Off</p>
-          <h1 className="text-2xl md:text-4xl font-bold leading-tight mb-6">
-            Your one-stop shop for <span className="text-brand">premium</span> tech and audio gear.
-          </h1>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="text-tea-green-100 md:text-brand font-bold text-sm uppercase tracking-[0.2em] mb-4"
+          >
+            Exclusive Deal 40% Off
+          </motion.p>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="text-3xl md:text-6xl font-bold leading-tight mb-6 text-white md:text-black"
+          >
+            Your one-stop shop for <span className="text-tea-green-100 md:text-brand">premium</span> tech and audio gear.
+          </motion.h1>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start space-y-4 sm:space-y-0 sm:space-x-6"
+          >
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full sm:w-auto bg-brand text-white px-8 py-4 rounded-full font-semibold shadow-xl shadow-brand/20 hover:bg-tea-green-100 transition-colors"
+              className="w-full sm:w-auto bg-brand text-white px-10 py-4 rounded-full font-bold shadow-2xl shadow-brand/30 hover:bg-tea-green-100 transition-all duration-300 uppercase tracking-wider text-sm"
             >
               Order Now
             </motion.button>
-            <button className="flex items-center space-x-2 font-medium text-dusty-olive hover:text-brand transition-colors group">
+            <button className="flex items-center space-x-2 font-bold text-white md:text-dusty-olive hover:text-brand transition-colors group uppercase tracking-wider text-sm">
               <span>Learn More</span>
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>
