@@ -48,32 +48,77 @@ export default function App() {
       adminService.getProducts(),
       adminService.getCategories()
     ]);
+
+    // Seeding logic for subcategories
+    const seedSubcategories = async (cats: Category[]) => {
+      const seeds = [
+        { category: 'Watches', subs: ['Smart Watches', 'Analog Watches', 'Mens Watches', 'Ladies Watches'] },
+        { category: 'Headphones', subs: ['Wireless', 'Gaming', 'Sports'] },
+        { category: 'Earpods', subs: ['Apple', 'GalaxyBuds', 'Oraimo'] }
+      ];
+
+      let updated = false;
+      for (const seed of seeds) {
+        let cat = cats.find(c => c.name === seed.category);
+        if (!cat) {
+          const newCat = await adminService.addCategory(seed.category);
+          if (newCat) {
+            cat = newCat;
+            updated = true;
+          }
+        }
+
+        if (cat) {
+          const existingSubs = cat.subcategories?.map(s => s.name) || [];
+          for (const subName of seed.subs) {
+            if (!existingSubs.includes(subName)) {
+              await adminService.addSubcategory(subName, cat.id);
+              updated = true;
+            }
+          }
+        }
+      }
+      return updated;
+    };
+
+    const needsRefresh = await seedSubcategories(fetchedCategories);
+    const finalCategories = needsRefresh ? await adminService.getCategories() : fetchedCategories;
     
-    // Merge fetched products with static ones for a richer experience during initial setup
-    // but prioritize fetched products
+    // Merge fetched products with static ones
     const allProducts = [...fetchedProducts];
-    
-    // Only add static products if they don't exist in the fetched list (by title to avoid duplicates)
     STATIC_PRODUCTS.forEach(sp => {
       if (!allProducts.find(p => p.title === sp.title)) {
         allProducts.push(sp);
       }
     });
 
+    // Fallback categories if database is completely empty
+    const fallbackCategories: Category[] = [
+      { id: '1', name: 'Watches', subcategories: [
+        { id: 's1', name: 'Smart Watches', category_id: '1' },
+        { id: 's2', name: 'Analog Watches', category_id: '1' },
+        { id: 's3', name: 'Mens Watches', category_id: '1' },
+        { id: 's4', name: 'Ladies Watches', category_id: '1' }
+      ]},
+      { id: '2', name: 'Headphones', subcategories: [
+        { id: 's5', name: 'Wireless', category_id: '2' },
+        { id: 's6', name: 'Gaming', category_id: '2' },
+        { id: 's7', name: 'Sports', category_id: '2' }
+      ]},
+      { id: '3', name: 'Earpods', subcategories: [
+        { id: 's8', name: 'Apple', category_id: '3' },
+        { id: 's9', name: 'GalaxyBuds', category_id: '3' },
+        { id: 's10', name: 'Oraimo', category_id: '3' }
+      ]}
+    ];
+
     setProducts(allProducts);
-    setCategories(fetchedCategories.length > 0 ? fetchedCategories : [
-      { id: '1', name: 'Watches', subcategories: [] },
-      { id: '2', name: 'Headphones', subcategories: [] },
-      { id: '3', name: 'Earpods', subcategories: [] }
-    ]);
+    setCategories(finalCategories.length > 0 ? finalCategories : fallbackCategories);
     setIsLoading(false);
   };
 
   useEffect(() => {
-    loadData().then(() => {
-      // Seed subcategories if they don't exist
-      adminService.seedSubcategories();
-    });
+    loadData();
   }, []);
 
   const addToCart = (product: Product) => {
@@ -118,7 +163,15 @@ export default function App() {
   const filteredProducts = useMemo(() => {
     if (currentView === 'home' || currentView === 'shop') return products;
     if (currentView === 'admin') return [];
-    return products.filter(p => p.category.toLowerCase() === currentView.toLowerCase());
+    
+    const [cat, sub] = currentView.split('/');
+    if (sub) {
+      return products.filter(p => 
+        p.category.toLowerCase() === cat.toLowerCase() && 
+        p.subcategory?.toLowerCase() === sub.toLowerCase()
+      );
+    }
+    return products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
   }, [currentView, products]);
 
   const handleNavigate = (view: string) => {
@@ -180,14 +233,8 @@ export default function App() {
           <>
             {currentView === 'home' && <Hero />}
             
-            <div className="max-w-7xl mx-auto px-4 pt-16 -mb-8">
-              <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter border-b-4 border-brand inline-block pb-1">
-                Featured Products
-              </h2>
-            </div>
-
             <ProductGrid 
-              title=""
+              title={currentView === 'home' ? 'featured products' : `featured ${currentView}`}
               products={filteredProducts}
               onAddToCart={addToCart}
               onBuyNow={buyNow}

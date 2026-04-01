@@ -1,3 +1,15 @@
+export interface Subcategory {
+  id: string;
+  name: string;
+  category_id: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  subcategories?: Subcategory[];
+}
+
 export interface Product {
   id: string;
   title: string;
@@ -55,17 +67,4 @@ export interface Voucher {
 
 export interface CartItem extends Product {
   quantity: number;
-}
-
-export interface Subcategory {
-  id: string;
-  category_id: string;
-  name: string;
-  image_url?: string;
-}
-
-export interface Category {
-  id: string;
-  name: string;
-  subcategories?: Subcategory[];
 }

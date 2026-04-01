@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect, FormEvent, useMemo } from 'react';
-import { Product, Order, Customer, Voucher, Category } from '../types';
+import { Product, Order, Customer, Voucher, Category, Subcategory } from '../types';
 import { adminService } from '../services/adminService';
 import { supabase } from '../lib/supabase';
 
@@ -182,7 +182,7 @@ export default function AdminDashboard({ onBack, onProductsChange }: AdminDashbo
         setIsAddingProduct(false);
         setEditingProductId(null);
         setProductFormData({
-          title: '', price: 0, rating: 5, image: '', category: categories[0] || '', description: '',
+          title: '', price: 0, rating: 5, image: '', category: categories[0]?.name || '', subcategory: '', description: '',
           colors: [], sizes: [], thumbnails: [], specs: [], stock: 0,
           ethos: { text: '', highlights: [] }
         });
@@ -196,7 +196,7 @@ export default function AdminDashboard({ onBack, onProductsChange }: AdminDashbo
         setProducts([result, ...products]);
         setIsAddingProduct(false);
         setProductFormData({
-          title: '', price: 0, rating: 5, image: '', category: categories[0] || '', description: '',
+          title: '', price: 0, rating: 5, image: '', category: categories[0]?.name || '', subcategory: '', description: '',
           colors: [], sizes: [], thumbnails: [], specs: [], stock: 0,
           ethos: { text: '', highlights: [] }
         });
@@ -223,9 +223,9 @@ export default function AdminDashboard({ onBack, onProductsChange }: AdminDashbo
     e.preventDefault();
     if (!newCategory.trim()) return;
     setIsLoading(true);
-    const success = await adminService.addCategory(newCategory.trim());
-    if (success) {
-      setCategories([...categories, newCategory.trim()].sort());
+    const result = await adminService.addCategory(newCategory.trim());
+    if (result) {
+      setCategories([...categories, result].sort((a, b) => a.name.localeCompare(b.name)));
       setNewCategory('');
       setIsAddingCategory(false);
       if (onProductsChange) onProductsChange();
@@ -713,7 +713,7 @@ export default function AdminDashboard({ onBack, onProductsChange }: AdminDashbo
                 )}
 
                 <form onSubmit={handleAddProduct} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Product Title</label>
                       <input 
@@ -737,21 +737,19 @@ export default function AdminDashboard({ onBack, onProductsChange }: AdminDashbo
                         ))}
                       </select>
                     </div>
-                    {categories.find(c => c.name === productFormData.category)?.subcategories && categories.find(c => c.name === productFormData.category)!.subcategories!.length > 0 && (
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Subcategory</label>
-                        <select 
-                          value={productFormData.subcategory}
-                          onChange={(e) => setProductFormData({...productFormData, subcategory: e.target.value})}
-                          className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand transition-all text-sm font-medium"
-                        >
-                          <option value="">Select Subcategory</option>
-                          {categories.find(c => c.name === productFormData.category)?.subcategories?.map(sub => (
-                            <option key={sub.id} value={sub.name}>{sub.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">Subcategory</label>
+                      <select 
+                        value={productFormData.subcategory}
+                        onChange={(e) => setProductFormData({...productFormData, subcategory: e.target.value})}
+                        className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-brand transition-all text-sm font-medium"
+                      >
+                        <option value="">None</option>
+                        {categories.find(c => c.name === productFormData.category)?.subcategories?.map(sub => (
+                          <option key={sub.id} value={sub.name}>{sub.name}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

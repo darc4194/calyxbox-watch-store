@@ -117,81 +117,60 @@ export const adminService = {
 
   // Categories
   async getCategories(): Promise<Category[]> {
-    const { data, error } = await supabase
+    const { data: categories, error: catError } = await supabase
       .from('categories')
-      .select('*, subcategories(*)');
+      .select('id, name')
+      .order('name');
 
-    if (error) {
-      console.error('Error fetching categories:', error);
+    if (catError) {
+      console.error('Error fetching categories:', catError);
       return [];
     }
 
-    return data as Category[];
+    const { data: subcategories, error: subError } = await supabase
+      .from('subcategories')
+      .select('*')
+      .order('name');
+
+    if (subError) {
+      console.error('Error fetching subcategories:', subError);
+      return categories.map(c => ({ ...c, subcategories: [] }));
+    }
+
+    return categories.map(category => ({
+      ...category,
+      subcategories: subcategories.filter(s => s.category_id === category.id)
+    }));
   },
 
-  async addCategory(name: string): Promise<boolean> {
-    const { error } = await supabase
+  async addCategory(name: string): Promise<Category | null> {
+    const { data, error } = await supabase
       .from('categories')
-      .insert([{ name }]);
+      .insert([{ name }])
+      .select()
+      .single();
 
     if (error) {
       console.error('Error adding category:', error);
-      return false;
+      return null;
     }
 
-    return true;
+    return data as Category;
   },
 
-  async getSubcategories(): Promise<Subcategory[]> {
+  async addSubcategory(name: string, categoryId: string): Promise<Subcategory | null> {
     const { data, error } = await supabase
       .from('subcategories')
-      .select('*');
-
-    if (error) {
-      console.error('Error fetching subcategories:', error);
-      return [];
-    }
-
-    return data as Subcategory[];
-  },
-
-  async addSubcategory(subcategory: Omit<Subcategory, 'id'>): Promise<boolean> {
-    const { error } = await supabase
-      .from('subcategories')
-      .insert([subcategory]);
+      .insert([{ name, category_id: categoryId }])
+      .select()
+      .single();
 
     if (error) {
       console.error('Error adding subcategory:', error);
-      return false;
+      return null;
     }
 
-    return true;
-  },
-
-  async seedSubcategories(): Promise<void> {
-    const categories = await this.getCategories();
-    
-    const seedData: Record<string, string[]> = {
-      'Watches': ['Smart Watches', 'Analog Watches', 'Mens Watches', 'Ladies Watches'],
-      'Headphones': ['Wireless', 'Gaming', 'Sports'],
-      'Earpods': ['Apple', 'Galaxy Buds', 'Oraimo']
-    };
-
-    for (const [catName, subNames] of Object.entries(seedData)) {
-      const category = categories.find(c => c.name === catName);
-      if (category) {
-        for (const subName of subNames) {
-          const exists = category.subcategories?.some(s => s.name === subName);
-          if (!exists) {
-            await this.addSubcategory({
-              name: subName,
-              category_id: category.id,
-              image_url: `https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=600` // Default placeholder
-            });
-          }
-        }
-      }
-    }
+    return data as Subcategory;
   },
 
   // Customers (Derived from orders for simplicity)
