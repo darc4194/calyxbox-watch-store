@@ -5,19 +5,19 @@ const FEATURED_CARDS = [
   {
     title: "Money-Saving Bundles",
     description: "Get the best value with our curated tech sets.",
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800",
+    image: "https://gclzimnozcxsttgghooh.supabase.co/storage/v1/object/public/Product%20Images/watch%20coll%20(1).jpg",
     color: "bg-tea-green-900"
   },
   {
     title: "Customized Watch Straps",
     description: "Personalize your style with premium materials.",
-    image: "https://images.unsplash.com/photo-1544117518-30dd5ff7a4b0?auto=format&fit=crop&q=80&w=800",
+    image: "https://gclzimnozcxsttgghooh.supabase.co/storage/v1/object/public/Product%20Images/still-life-tech-device%20(1).jpg",
     color: "bg-dusty-olive-900"
   },
   {
     title: "Limited Edition Earpods",
     description: "Exclusive designs for the true audiophile.",
-    image: "https://images.unsplash.com/photo-1588423770574-91993ca06f42?auto=format&fit=crop&q=80&w=800",
+    image: "https://gclzimnozcxsttgghooh.supabase.co/storage/v1/object/public/Product%20Images/26763361_2111.i211.036.F.m012.c9.headphones%20black%20wireless%20realistic%20(1).jpg",
     color: "bg-carbon-black-900"
   }
 ];
