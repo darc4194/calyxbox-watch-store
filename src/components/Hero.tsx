@@ -14,7 +14,7 @@ export default function Hero() {
           className="w-full h-full"
         >
           <img
-            src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=1200"
+            src="https://gclzimnozcxsttgghooh.supabase.co/storage/v1/object/public/Product%20Images/man-green-blazer-wearing-gold-colored-lion-ring-watch%20(1).jpg"
             alt="Premium Lifestyle Watch"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
