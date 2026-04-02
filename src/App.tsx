@@ -12,6 +12,7 @@ import ProductPage from './components/ProductPage';
 import ThankYouView from './components/ThankYouView';
 import AdminDashboard from './components/AdminDashboard';
 import AdminLogin from './components/AdminLogin';
+import LoadingScreen from './components/LoadingScreen';
 import { PRODUCTS as STATIC_PRODUCTS } from './constants';
 import { Product, CartItem, Category } from './types';
 import { adminService } from './services/adminService';
@@ -43,78 +44,72 @@ export default function App() {
   }, []);
 
   const loadData = async () => {
+    // Start loading
     setIsLoading(true);
-    const [fetchedProducts, fetchedCategories] = await Promise.all([
-      adminService.getProducts(),
-      adminService.getCategories()
-    ]);
+    
+    try {
+      const [fetchedProducts, fetchedCategories] = await Promise.all([
+        adminService.getProducts(),
+        adminService.getCategories()
+      ]);
 
-    // Seeding logic for subcategories
-    const seedSubcategories = async (cats: Category[]) => {
-      const seeds = [
-        { category: 'Watches', subs: ['Smart Watches', 'Analog Watches', 'Mens Watches', 'Ladies Watches'] },
-        { category: 'Headphones', subs: ['Wireless', 'Gaming', 'Sports'] },
-        { category: 'Earpods', subs: ['Apple', 'GalaxyBuds', 'Oraimo'] }
-      ];
+      // Seeding logic - only run if categories are empty to avoid slow sequential calls on every load
+      if (fetchedCategories.length === 0) {
+        const seeds = [
+          { category: 'Watches', subs: ['Smart Watches', 'Analog Watches', 'Mens Watches', 'Ladies Watches'] },
+          { category: 'Headphones', subs: ['Wireless', 'Gaming', 'Sports'] },
+          { category: 'Earpods', subs: ['Apple', 'GalaxyBuds', 'Oraimo'] }
+        ];
 
-      let updated = false;
-      for (const seed of seeds) {
-        let cat = cats.find(c => c.name === seed.category);
-        if (!cat) {
+        // Run in parallel for speed
+        await Promise.all(seeds.map(async (seed) => {
           const newCat = await adminService.addCategory(seed.category);
           if (newCat) {
-            cat = newCat;
-            updated = true;
+            await Promise.all(seed.subs.map(subName => adminService.addSubcategory(subName, newCat.id)));
           }
-        }
-
-        if (cat) {
-          const existingSubs = cat.subcategories?.map(s => s.name) || [];
-          for (const subName of seed.subs) {
-            if (!existingSubs.includes(subName)) {
-              await adminService.addSubcategory(subName, cat.id);
-              updated = true;
-            }
-          }
-        }
+        }));
+        
+        // Final re-fetch
+        const finalCategories = await adminService.getCategories();
+        setCategories(finalCategories);
+      } else {
+        setCategories(fetchedCategories);
       }
-      return updated;
-    };
 
-    const needsRefresh = await seedSubcategories(fetchedCategories);
-    const finalCategories = needsRefresh ? await adminService.getCategories() : fetchedCategories;
-    
-    // Merge fetched products with static ones
-    const allProducts = [...fetchedProducts];
-    STATIC_PRODUCTS.forEach(sp => {
-      if (!allProducts.find(p => p.title === sp.title)) {
-        allProducts.push(sp);
-      }
-    });
-
-    // Fallback categories if database is completely empty
-    const fallbackCategories: Category[] = [
-      { id: '1', name: 'Watches', subcategories: [
-        { id: 's1', name: 'Smart Watches', category_id: '1' },
-        { id: 's2', name: 'Analog Watches', category_id: '1' },
-        { id: 's3', name: 'Mens Watches', category_id: '1' },
-        { id: 's4', name: 'Ladies Watches', category_id: '1' }
-      ]},
-      { id: '2', name: 'Headphones', subcategories: [
-        { id: 's5', name: 'Wireless', category_id: '2' },
-        { id: 's6', name: 'Gaming', category_id: '2' },
-        { id: 's7', name: 'Sports', category_id: '2' }
-      ]},
-      { id: '3', name: 'Earpods', subcategories: [
-        { id: 's8', name: 'Apple', category_id: '3' },
-        { id: 's9', name: 'GalaxyBuds', category_id: '3' },
-        { id: 's10', name: 'Oraimo', category_id: '3' }
-      ]}
-    ];
-
-    setProducts(allProducts);
-    setCategories(finalCategories.length > 0 ? finalCategories : fallbackCategories);
-    setIsLoading(false);
+      // Merge products
+      const allProducts = [...fetchedProducts];
+      STATIC_PRODUCTS.forEach(sp => {
+        if (!allProducts.find(p => p.title === sp.title)) {
+          allProducts.push(sp);
+        }
+      });
+      setProducts(allProducts);
+    } catch (error) {
+      console.error('Error loading data:', error);
+      // Fallback categories if database is completely empty
+      const fallbackCategories: Category[] = [
+        { id: '1', name: 'Watches', subcategories: [
+          { id: 's1', name: 'Smart Watches', category_id: '1' },
+          { id: 's2', name: 'Analog Watches', category_id: '1' },
+          { id: 's3', name: 'Mens Watches', category_id: '1' },
+          { id: 's4', name: 'Ladies Watches', category_id: '1' }
+        ]},
+        { id: '2', name: 'Headphones', subcategories: [
+          { id: 's5', name: 'Wireless', category_id: '2' },
+          { id: 's6', name: 'Gaming', category_id: '2' },
+          { id: 's7', name: 'Sports', category_id: '2' }
+        ]},
+        { id: '3', name: 'Earpods', subcategories: [
+          { id: 's8', name: 'Apple', category_id: '3' },
+          { id: 's9', name: 'GalaxyBuds', category_id: '3' },
+          { id: 's10', name: 'Oraimo', category_id: '3' }
+        ]}
+      ];
+      setCategories(fallbackCategories);
+      setProducts(STATIC_PRODUCTS);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -194,12 +189,15 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      {isLoading && <LoadingScreen />}
+      
       {currentView !== 'admin' && (
         <Header 
           cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
           onViewCart={() => setIsCartOpen(true)}
           onNavigate={handleNavigate}
           categories={categories}
+          isTransparent={currentView === 'home'}
         />
       )}
 

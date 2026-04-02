@@ -14,7 +14,7 @@ export default function Hero() {
           className="w-full h-full"
         >
           <img
-            src="https://gclzimnozcxsttgghooh.supabase.co/storage/v1/object/public/Product%20Images/man-green-blazer-wearing-gold-colored-lion-ring-watch%20(1).jpg"
+            src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&q=80&w=1200"
             alt="Premium Lifestyle Watch"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
@@ -25,7 +25,7 @@ export default function Hero() {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-20 w-full h-full md:w-1/2 flex items-center px-6 md:px-16 md:bg-white">
+      <div className="relative z-20 w-full h-full md:w-1/2 flex items-center px-6 pt-20 md:pt-0 md:px-16 md:bg-white">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -22,9 +22,16 @@ export default function ProductGrid({ title, products, onAddToCart, onBuyNow, on
       </div>
       
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center py-20 space-y-4">
-          <Loader2 className="animate-spin text-brand" size={40} />
-          <p className="text-xs font-bold uppercase tracking-widest text-dusty-olive/60">Fetching products...</p>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+            <div key={i} className="space-y-4 animate-pulse">
+              <div className="aspect-square bg-gray-100 rounded-2xl"></div>
+              <div className="space-y-2">
+                <div className="h-4 bg-gray-100 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">

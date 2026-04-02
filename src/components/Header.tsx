@@ -15,9 +15,10 @@ interface HeaderProps {
   onViewCart: () => void;
   onNavigate: (view: string) => void;
   categories?: Category[];
+  isTransparent?: boolean;
 }
 
-export default function Header({ cartCount, onViewCart, onNavigate, categories = [] }: HeaderProps) {
+export default function Header({ cartCount, onViewCart, onNavigate, categories = [], isTransparent = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   
@@ -65,15 +66,23 @@ export default function Header({ cartCount, onViewCart, onNavigate, categories =
 
   const activeItem = navItems.find(item => item.name === hoveredCategory);
 
+  const headerClasses = isTransparent 
+    ? "absolute top-0 left-0 z-50 w-full bg-transparent border-none lg:sticky lg:bg-white lg:border-b lg:border-gray-100 lg:shadow-sm"
+    : "sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm";
+
+  const textClasses = isTransparent 
+    ? "text-white lg:text-gray-900" 
+    : "text-gray-900";
+
   return (
     <header 
-      className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm"
+      className={headerClasses}
       onMouseLeave={() => setHoveredCategory(null)}
     >
       <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
         {/* Logo */}
         <div 
-          className="text-lg md:text-xl font-bold tracking-tighter cursor-pointer"
+          className={`text-lg md:text-xl font-bold tracking-tighter cursor-pointer ${textClasses}`}
           onClick={() => handleNavClick('home')}
         >
           CALYX<span className="text-brand">BOX</span>
@@ -176,11 +185,11 @@ export default function Header({ cartCount, onViewCart, onNavigate, categories =
 
         {/* Actions */}
         <div className="flex items-center space-x-2 md:space-x-6">
-          <button className="hidden sm:block p-2 hover:bg-tea-green-900 rounded-full transition-colors">
+          <button className={`hidden sm:block p-2 hover:bg-tea-green-900 rounded-full transition-colors ${textClasses}`}>
             <Search size={20} />
           </button>
 
-          <button className="p-2 hover:bg-tea-green-900 rounded-full transition-colors">
+          <button className={`p-2 hover:bg-tea-green-900 rounded-full transition-colors ${textClasses}`}>
             <User size={20} />
           </button>
           
@@ -216,7 +225,7 @@ export default function Header({ cartCount, onViewCart, onNavigate, categories =
 
           {/* Mobile Menu Toggle */}
           <button 
-            className="lg:hidden p-2 hover:bg-gray-50 rounded-full transition-colors"
+            className={`lg:hidden p-2 hover:bg-gray-50/10 rounded-full transition-colors ${textClasses}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
